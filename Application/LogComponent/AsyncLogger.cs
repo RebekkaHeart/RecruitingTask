@@ -1,4 +1,4 @@
-﻿namespace LogComponent
+﻿namespace Application.LogComponent
 {
 	using System;
 	using System.Collections.Generic;

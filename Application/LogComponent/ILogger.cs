@@ -1,4 +1,4 @@
-namespace LogComponent
+namespace Application.LogComponent
 {
 	public interface ILogger
 	{

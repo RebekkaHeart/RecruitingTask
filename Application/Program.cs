@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using LogComponent;
+using Application.LogComponent;
 
 namespace Application
 {
