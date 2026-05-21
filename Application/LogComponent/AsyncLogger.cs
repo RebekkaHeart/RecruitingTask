@@ -40,12 +40,11 @@
 			{
 				if (this._lines.Count > 0)
 				{
-					int f = 0;
 					List<LogLine> _handled = new List<LogLine>();
 
-					foreach (LogLine logLine in this._lines)
+					for (int f = 0; f < this._lines.Count; f++)
 					{
-						f++;
+						LogLine logLine = this._lines[f];
 
 						if (f > 5)
 							continue;
