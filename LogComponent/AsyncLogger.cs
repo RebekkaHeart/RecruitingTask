@@ -1,4 +1,4 @@
-﻿namespace LogTest
+﻿namespace LogComponent
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,7 +6,7 @@
 	using System.Text;
 	using System.Threading;
 
-	public class AsyncLogInterface : LogInterface
+	public class AsyncLogger : ILogger
 	{
 		private Thread _runThread;
 		private List<LogLine> _lines = new List<LogLine>();
@@ -15,7 +15,11 @@
 
 		private bool _exit;
 
-		public AsyncLogInterface()
+		private bool _QuitWithFlush = false;
+
+		DateTime _curDate = DateTime.Now;
+
+		public AsyncLogger()
 		{
 			if (!Directory.Exists(@"./LogTest"))
 				Directory.CreateDirectory(@"./LogTest");
@@ -29,11 +33,6 @@
 			this._runThread = new Thread(this.MainLoop);
 			this._runThread.Start();
 		}
-
-		private bool _QuitWithFlush = false;
-
-
-		DateTime _curDate = DateTime.Now;
 
 		private void MainLoop()
 		{

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using LogTest;
+using LogComponent;
 
 namespace Application
 {
@@ -8,7 +8,7 @@ namespace Application
 	{
 		static void Main(string[] args)
 		{
-			LogInterface logger = new AsyncLogInterface();
+			ILogger logger = new AsyncLogger();
 
 			for (int i = 0; i < 15; i++)
 			{
@@ -18,7 +18,7 @@ namespace Application
 
 			logger.Stop_With_Flush();
 
-			LogInterface logger2 = new AsyncLogInterface();
+			ILogger logger2 = new AsyncLogger();
 
 			for (int i = 50; i > 0; i--)
 			{

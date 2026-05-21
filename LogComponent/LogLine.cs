@@ -1,66 +1,50 @@
-namespace LogTest
+namespace LogComponent
 {
-	using System;
-	using System.Text;
+    using System;
+    using System.Text;
 
-	/// <summary>
-	/// This is the object that the diff. loggers (filelogger, consolelogger etc.) will operate on. The LineText() method will be called to get the text (formatted) to log
-	/// </summary>
-	public class LogLine
-	{
-		#region Private Fields
+    /// <summary>
+    /// This is the object that the diff. loggers (filelogger, consolelogger etc.) will operate on. The LineText() method will be called to get the text (formatted) to log
+    /// </summary>
+    public class LogLine
+    {
+    	/// <summary>
+    	/// The text to be displayed in a log line
+    	/// </summary>
+    	public string Text { get; set; }
 
-		#endregion
+    	/// <summary>
+    	/// The Timestamp of a log. It is initialized when the log is added.
+    	/// </summary>
+    	public virtual DateTime Timestamp { get; set; }
 
-		#region Constructors
+    	public LogLine()
+    	{
+    		this.Text = "";
+    	}
 
-		public LogLine()
-		{
-			this.Text = "";
-		}
+    	/// <summary>
+    	/// Get the logged text.
+    	/// </summary>
+    	/// <returns>A formatted log line</returns>
+    	public virtual string LineText()
+    	{
+    		StringBuilder sb = new StringBuilder();
 
-		#endregion
+    		if (this.Text.Length > 0)
+    		{
+    			sb.Append(this.Text);
+    			sb.Append(". ");
+    		}
 
-		#region Public Methods
+    		sb.Append(this.CreateLineText());
 
-		/// <summary>
-		/// Return a formatted line
-		/// </summary>
-		/// <returns></returns>
-		public virtual string LineText()
-		{
-			StringBuilder sb = new StringBuilder();
+    		return sb.ToString();
+    	}
 
-			if (this.Text.Length > 0)
-			{
-				sb.Append(this.Text);
-				sb.Append(". ");
-			}
-
-			sb.Append(this.CreateLineText());
-
-			return sb.ToString();
-		}
-
-		public virtual string CreateLineText()
-		{
-			return "";
-		}
-
-		#endregion
-
-		#region Properties
-
-		/// <summary>
-		/// The text to be display in logline
-		/// </summary>
-		public string Text { get; set; }
-
-		/// <summary>
-		/// The Timestamp is initialized when the log is added. Th
-		/// </summary>
-		public virtual DateTime Timestamp { get; set; }
-
-		#endregion
-	}
+    	public virtual string CreateLineText()
+    	{
+    		return "";
+    	}
+    }
 }
