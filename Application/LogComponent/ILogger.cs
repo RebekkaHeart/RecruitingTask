@@ -13,7 +13,7 @@ namespace Application.LogComponent
 		void Stop_With_Flush();
 
 		/// <summary>
-		/// WriteLog a message to the Log.
+		/// Write a message to the Log.
 		/// </summary>
 		/// <param name="s">The string to be written to the Log.</param>
 		void WriteLog(string s);
