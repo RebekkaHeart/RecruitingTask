@@ -7,7 +7,7 @@
 	using System.Text;
 	using System.Threading;
 
-	public class AsyncLogger : ILogger
+    public class AsyncLogger : ILogger
 	{
 		private Thread _runThread;
 
@@ -21,9 +21,13 @@
 
 		private DateTime _curDate = DateTime.Now;
 
-		public AsyncLogger()
+        /// <summary>
+        /// An asynchronous logger that writes log lines to a file. The logger runs in a separate thread and uses a concurrent queue 
+        /// to store log lines until they are written to the file. The logger can be stopped with or without flushing the remaining log lines to the file.
+        /// </summary>
+        public AsyncLogger()
 		{
-			if (!Directory.Exists(@"./LogTest"))
+            if (!Directory.Exists(@"./LogTest"))
 				Directory.CreateDirectory(@"./LogTest");
 
 			this._writer = File.AppendText(@"./LogTest/Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + ".log");
@@ -74,13 +78,18 @@
 						}
 					}
 
-					if (this._QuitWithFlush == true && this._lines.IsEmpty)
+					if (this._QuitWithFlush == true && this._lines.IsEmpty) { 
 						this._exit = true;
-
-					Thread.Sleep(50);
+					} 
+					else if (!this._exit)
+					{
+                        Thread.Sleep(50);
+                    }
 				}
 			}
-		}
+
+            this._writer?.Dispose(); // Ensure the StreamWriter is properly disposed when the logger is stopped.
+        }
 
 		public void Stop_Without_Flush()
 		{
