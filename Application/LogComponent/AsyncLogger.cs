@@ -1,7 +1,8 @@
 ﻿namespace Application.LogComponent
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections.Concurrent;
+    using System.Collections.Generic;
 	using System.IO;
 	using System.Text;
 	using System.Threading;
@@ -9,7 +10,8 @@
 	public class AsyncLogger : ILogger
 	{
 		private Thread _runThread;
-		private List<LogLine> _lines = new List<LogLine>();
+
+		private ConcurrentQueue<LogLine> _lines = new ConcurrentQueue<LogLine>();
 
 		private StreamWriter _writer;
 
@@ -17,7 +19,7 @@
 
 		private bool _QuitWithFlush = false;
 
-		DateTime _curDate = DateTime.Now;
+		private DateTime _curDate = DateTime.Now;
 
 		public AsyncLogger()
 		{
@@ -38,21 +40,12 @@
 		{
 			while (!this._exit)
 			{
-				if (this._lines.Count > 0)
+				if (!this._lines.IsEmpty)
 				{
-					List<LogLine> _handled = new List<LogLine>();
-
-					for (int f = 0; f < this._lines.Count; f++)
+					while (this._lines.TryDequeue(out LogLine logLine))
 					{
-						LogLine logLine = this._lines[f];
-
-						if (f > 5)
-							continue;
-
 						if (!this._exit || this._QuitWithFlush)
 						{
-							_handled.Add(logLine);
-
 							StringBuilder stringBuilder = new StringBuilder();
 
 							if ((DateTime.Now - _curDate).Days != 0)
@@ -81,12 +74,7 @@
 						}
 					}
 
-					for (int y = 0; y < _handled.Count; y++)
-					{
-						this._lines.Remove(_handled[y]);
-					}
-
-					if (this._QuitWithFlush == true && this._lines.Count == 0)
+					if (this._QuitWithFlush == true && this._lines.IsEmpty)
 						this._exit = true;
 
 					Thread.Sleep(50);
@@ -106,7 +94,7 @@
 
 		public void WriteLog(string s)
 		{
-			this._lines.Add(new LogLine() {Text = s, Timestamp = DateTime.Now});
+			this._lines.Enqueue(new LogLine() {Text = s, Timestamp = DateTime.Now});
 		}
 	}
 }

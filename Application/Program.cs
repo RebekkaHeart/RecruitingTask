@@ -12,7 +12,7 @@ namespace Application
 
 			for (int i = 0; i < 15; i++)
 			{
-				logger.WriteLog("Number with Flush: " + i.ToString());
+				logger.WriteLog("Number with flush: " + i.ToString());
 				Thread.Sleep(50);
 			}
 
@@ -22,7 +22,7 @@ namespace Application
 
 			for (int i = 50; i > 0; i--)
 			{
-				logger2.WriteLog("Number with No flush: " + i.ToString());
+				logger2.WriteLog("Number with no flush: " + i.ToString());
 				Thread.Sleep(20);
 			}
 
