@@ -19,3 +19,6 @@
 - Fix location of LogTest-folder. Right now it's deep in the bin, both normally and for tests.
 - Consider changing name of `ILogger`, something in C# is already called that.
 - Make it possible for the `WritingToLogger_ShouldAddLogFile`-test to be called with different data rows. Right now it can't because I need to mock `DateTime.Now` so I can be very specific with the time checking.
+- Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.
+- Make test to prove a new file is created if midnight is crossed.
+- Make test to prove that stop behavior works as intended.
