@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Concurrent;
-    using System.Collections.Generic;
 	using System.IO;
 	using System.Text;
 	using System.Threading;
@@ -19,18 +18,23 @@
 
 		private bool _QuitWithFlush = false;
 
-		private DateTime _curDate = DateTime.Now;
+		private TimeProvider _timeProvider;
+
+		private DateTimeOffset _curDate;
 
         /// <summary>
         /// An asynchronous logger that writes log lines to a file. The logger runs in a separate thread and uses a concurrent queue 
         /// to store log lines until they are written to the file. The logger can be stopped with or without flushing the remaining log lines to the file.
         /// </summary>
-        public AsyncLogger()
+        public AsyncLogger(TimeProvider timeProvider)
 		{
             if (!Directory.Exists(@"./LogTest"))
 				Directory.CreateDirectory(@"./LogTest");
 
-			this._writer = File.AppendText(@"./LogTest/Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + ".log");
+			this._timeProvider = timeProvider;
+			this._curDate = this._timeProvider.GetLocalNow();
+
+			this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
 
 			this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
 
@@ -52,15 +56,13 @@
 						{
 							StringBuilder stringBuilder = new StringBuilder();
 
-							if ((DateTime.Now - _curDate).Days != 0)
+                            if ((this._timeProvider.GetLocalNow().Day - this._curDate.Day) != 0)
 							{
-								_curDate = DateTime.Now;
+								this._curDate = this._timeProvider.GetLocalNow();
 
-								this._writer = File.AppendText(@"./LogTest/Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + ".log");
+                                this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
 
 								this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
-
-								stringBuilder.Append(Environment.NewLine);
 
 								this._writer.Write(stringBuilder.ToString());
 
@@ -72,19 +74,17 @@
 							stringBuilder.Append(logLine.LineText());
 							stringBuilder.Append("\t");
 
-							stringBuilder.Append(Environment.NewLine);
+                            stringBuilder.Append(Environment.NewLine);
 
-							this._writer.Write(stringBuilder.ToString());
+                            this._writer.Write(stringBuilder.ToString());
 						}
 					}
 
-					if (this._QuitWithFlush == true && this._lines.IsEmpty) { 
+                    Thread.Sleep(50);
+
+                    if (this._QuitWithFlush == true && this._lines.IsEmpty) { 
 						this._exit = true;
-					} 
-					else if (!this._exit)
-					{
-                        Thread.Sleep(50);
-                    }
+					}
 				}
 			}
 
@@ -103,7 +103,7 @@
 
 		public void WriteLog(string s)
 		{
-			this._lines.Enqueue(new LogLine() {Text = s, Timestamp = DateTime.Now});
+			this._lines.Enqueue(new LogLine() {Text = s, Timestamp = this._timeProvider.GetLocalNow()});
 		}
 	}
 }

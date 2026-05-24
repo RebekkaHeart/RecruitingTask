@@ -16,7 +16,7 @@ namespace Application.LogComponent
     	/// <summary>
     	/// The Timestamp of a log. It is initialized when the log is added.
     	/// </summary>
-    	public virtual DateTime Timestamp { get; set; }
+    	public virtual DateTimeOffset Timestamp { get; set; }
 
     	public LogLine()
     	{

@@ -8,7 +8,9 @@ namespace Application
 	{
 		static void Main(string[] args)
 		{
-			ILogger logger = new AsyncLogger();
+			TimeProvider timeProvider = TimeProvider.System;
+
+			ILogger logger = new AsyncLogger(timeProvider);
 
 			for (int i = 0; i < 15; i++)
 			{
@@ -18,7 +20,7 @@ namespace Application
 
 			logger.Stop_With_Flush();
 
-			ILogger logger2 = new AsyncLogger();
+			ILogger logger2 = new AsyncLogger(timeProvider);
 
 			for (int i = 50; i > 0; i--)
 			{
@@ -28,7 +30,7 @@ namespace Application
 
 			logger2.Stop_Without_Flush();
 
-			Console.ReadLine();
+			//Console.ReadLine();
 		}
 	}
 }
