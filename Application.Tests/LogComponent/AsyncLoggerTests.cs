@@ -7,19 +7,60 @@ namespace Application.Tests.LogComponent;
 public sealed class AsyncLoggerTests
 {
     [TestMethod]
-    public void WritingToLogger_ShouldAddLogFile()
+    public async Task StopWithoutFlush_ShouldNotWriteRemainingLogs()
     {
         // Arrange
-        TimeProvider timeProvider = TimeProvider.System;
-        DateTimeOffset now = timeProvider.GetLocalNow();
+        FakeTimeProvider timeProvider = new FakeTimeProvider(DateTimeOffset.Now.AddHours(1));
         ILogger logger = new AsyncLogger(timeProvider);
-        string message = "TestLogMessage"; // it has to be without spaces, because the file data gets split by spaces
+        string message1 = "TestLogMessage1";
+        string message2 = "TestLogMessage2";
+
+        // Act
+        logger.WriteLog(message1);
+        Thread.Sleep(30);
+        logger.WriteLog(message2);
+        logger.StopWithoutFlush();
+        Thread.Sleep(30);
+
+        // Assert
+        string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");
+        var file = Directory.EnumerateFiles(logFilePath, $"Log{timeProvider.GetLocalNow():yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
+        Assert.IsNotNull(file);
+        var lines = File.ReadLines(file).ToList();
+        Assert.IsTrue(lines.Any(line => line.Contains(message1)));
+        Assert.IsFalse(lines.Any(line => line.Contains(message2)));
+    }
+
+    [TestMethod]
+    public async Task StopWithFlush_WaitsForLoggingToFinish()
+    {
+        // Arrange
+        FakeTimeProvider timeProvider = new FakeTimeProvider(DateTimeOffset.Now.AddHours(2));
+        ILogger logger = new AsyncLogger(timeProvider);
+        string message = "TestLogMessage";
 
         // Act
         logger.WriteLog(message);
-        logger.Stop_With_Flush();
+        var stopTask = logger.StopWithFlush();
 
-        Thread.Sleep(1000);
+        // Assert
+        Assert.IsFalse(stopTask.IsCompleted);
+        await stopTask;
+        Assert.IsTrue(stopTask.IsCompleted);
+    }
+
+    [TestMethod]
+    public async Task WriteToLog_ShouldAddLogFile()
+    {
+        // Arrange
+        FakeTimeProvider timeProvider = new FakeTimeProvider(DateTimeOffset.Now.AddHours(3));
+        DateTimeOffset now = timeProvider.GetLocalNow();
+        ILogger logger = new AsyncLogger(timeProvider);
+        string message = "TestLogMessage"; // it has to be without spaces, because the file data gets split by spaces further down
+
+        // Act
+        logger.WriteLog(message);
+        await logger.StopWithFlush();
 
         // Assert
         string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");
@@ -30,7 +71,7 @@ public sealed class AsyncLoggerTests
     }
 
     [TestMethod]
-    public void CrossingMidnight_ShouldCreateNewLogFile()
+    public async Task CrossingMidnight_ShouldCreateNewLogFile()
     {
         // Arrange
         string messageBeforeMidnight = "TestLogMessageBeforeMidnight";
@@ -47,8 +88,7 @@ public sealed class AsyncLoggerTests
         fakeTimeProvider.Advance(TimeSpan.FromMilliseconds(2)); // Advance time to just after midnight
         logger.WriteLog(messageAfterMidnight);
 
-        logger.Stop_With_Flush();
-        Thread.Sleep(1000);
+        await logger.StopWithFlush();
 
         // Assert
         string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");

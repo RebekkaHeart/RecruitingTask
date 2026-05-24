@@ -5,6 +5,7 @@
 	using System.IO;
 	using System.Text;
 	using System.Threading;
+    using System.Threading.Tasks;
 
     public class AsyncLogger : ILogger
 	{
@@ -91,15 +92,17 @@
             this._writer?.Dispose(); // Ensure the StreamWriter is properly disposed when the logger is stopped.
         }
 
-		public void Stop_Without_Flush()
+		public void StopWithoutFlush()
 		{
 			this._exit = true;
 		}
 
-		public void Stop_With_Flush()
+		public async Task StopWithFlush()
 		{
 			this._QuitWithFlush = true;
-		}
+
+			await (this._runThread != null ? Task.Run(() => this._runThread.Join()) : Task.CompletedTask);
+        }
 
 		public void WriteLog(string s)
 		{

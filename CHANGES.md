@@ -15,6 +15,8 @@
 | Changed `_lines` in `AsyncLogger` from a `List<LogLine>` into `ConcurrectQueue<LogLine>`. This also caused several other changes to take this type-change into account | Since the list was being accessed by two threads, the one adding to it in `Program.cs` and the `MainLoop()`, it needed to be able to handle several things trying to access it at once (thread-safe) |
 | Created test for `AsyncLogger` | |
 | Turned all instances of the `DateTime`-data type into `DateTimeOffset` | In order to use the `TimeProvider` normally and `FakeTimeProvider` for testing. |
+| Removed underscores from `Stop_With_Flush()` and `Stop_Without_Flush()` | No other methods use underscores in this way, so I made it consistent. |
+| Made `StopWithFlush()` wait for the main thread to finish and made a test for it | |
 
 ## Changes I wish to make
 
@@ -23,7 +25,7 @@
 - Make it possible for the `WritingToLogger_ShouldAddLogFile`-test to be called with different data rows. Right now it can't because I need to mock `DateTime.Now` so I can be very specific with the time checking.
 - Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.
 - Make test to prove a new file is created if midnight is crossed.
-- Make test to prove that stop behavior works as intended.
+- Make tests to prove that stop behavior works as intended.
 - Consider making locks for `_exit` and `_QuitWithFlush` in `AsyncLogger` since they can get accessed by more than one thread at the same time.
 - Consider renaming `MainLoop()` in `AsyncLogger` to something that explains what it does.
 - Consider using `DateTimeOff.GetUtcNow()` instead of `DateTime.GetLocalNow()`.
