@@ -17,6 +17,7 @@
 | Turned all instances of the `DateTime`-data type into `DateTimeOffset` | In order to use the `TimeProvider` normally and `FakeTimeProvider` for testing. |
 | Removed underscores from `Stop_With_Flush()` and `Stop_Without_Flush()` | No other methods use underscores in this way, so I made it consistent. |
 | Made `StopWithFlush()` wait for the main thread to finish and made a test for it | |
+| Made test for `StopWithoutFlush()` | |
 
 ## Changes I wish to make
 
@@ -25,7 +26,7 @@
 - Make it possible for the `WritingToLogger_ShouldAddLogFile`-test to be called with different data rows. Right now it can't because I need to mock `DateTime.Now` so I can be very specific with the time checking.
 - Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.
 - Make test to prove a new file is created if midnight is crossed.
-- Make tests to prove that stop behavior works as intended.
 - Consider making locks for `_exit` and `_QuitWithFlush` in `AsyncLogger` since they can get accessed by more than one thread at the same time.
 - Consider renaming `MainLoop()` in `AsyncLogger` to something that explains what it does.
 - Consider using `DateTimeOff.GetUtcNow()` instead of `DateTime.GetLocalNow()`.
+- Consider if some of or all the `Thread.Sleep()`'s in the tests should be removed.
