@@ -6,7 +6,7 @@ namespace Application.Tests.LogComponent;
 [TestClass]
 public sealed class AsyncLoggerTests
 {
-    private string _logFolderPath = @"./../../../LogTest";
+    private readonly string _logFolderPath = @"./../../../LogTest";
 
     [TestMethod]
     public async Task StopWithoutFlush_ShouldNotWriteRemainingLogs()

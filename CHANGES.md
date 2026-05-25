@@ -15,19 +15,22 @@
 | Changed `_lines` in `AsyncLogger` from a `List<LogLine>` into `ConcurrectQueue<LogLine>`. This also caused several other changes to take this type-change into account | Since the list was being accessed by two threads, the one adding to it in `Program.cs` and the `MainLoop()`, it needed to be able to handle several things trying to access it at once (thread-safe) |
 | Created test for `AsyncLogger` | |
 | Turned all instances of the `DateTime`-data type into `DateTimeOffset` | In order to use the `TimeProvider` normally and `FakeTimeProvider` for testing. |
-| Removed underscores from `Stop_With_Flush()` and `Stop_Without_Flush()` | No other methods use underscores in this way, so I made it consistent. |
+| Removed underscores from `Stop_With_Flush()` and `Stop_Without_Flush()` | No other methods use underscores in their name, so I made it consistent. |
 | Made `StopWithFlush()` wait for the main thread to finish and made a test for it | |
 | Made test for `StopWithoutFlush()` | |
 | Fixed if-statement in `MainLoop()` so that the code does make a new file when crossing midnight and made test for it | |
+| Changed the check for whether `_lines` in `MainLoop()` is empty | It feels like it takes up less space when the following code isn't within an entire if-block |
+| Made helper-method `SetUpWriter()` in `AsyncLogger` that sets up the StreamWriter | Replacing three lines of very specific code that were written twice. |
 
 ## Changes I wish to make
 
 - Consider changing name of `ILogger`, something in C# is already called that.
-- Consider having some of or all the tests get called with different data rows.
-- Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.
+- Consider having some of or all the tests get called with different data rows and just making more tests in general.
 - Consider making locks for `_exit` and `_QuitWithFlush` in `AsyncLogger` since they can get accessed by more than one thread at the same time.
 - Consider renaming `MainLoop()` in `AsyncLogger` to something that explains what it does.
 - Consider using `DateTimeOffset.GetUtcNow()` instead of `DateTimeOffset.GetLocalNow()`.
 - Consider if some of or all the `Thread.Sleep()`'s in the tests should be removed.
 - Consider if some exceptions should be thrown in some places and whether there should be some try-catch'es.
 - Consider implementing more validation of input.
+- Consider if something could be done to avoid having two while-loops in `MainLoop()`.
+- Consider if `MainLoop()` should start out waiting for something to be added to `_lines` and time out if nothing gets added after a certain amount of time.

@@ -23,7 +23,7 @@
 
 		private DateTimeOffset _curDate;
 
-		private string _logFolderPath = @"./../../../LogTest";
+		private readonly string _logFolderPath = @"./../../../LogTest";
 
         /// <summary>
         /// An asynchronous logger that writes log lines to a file. The logger runs in a separate thread and uses a concurrent queue 
@@ -37,62 +37,70 @@
 			this._timeProvider = timeProvider;
 			this._curDate = this._timeProvider.GetLocalNow();
 
-			this._writer = File.AppendText(this._logFolderPath + "/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
-
-			this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
-
-			this._writer.AutoFlush = true;
+			SetUpWriter();
 
 			this._runThread = new Thread(this.MainLoop);
 			this._runThread.Start();
 		}
 
-		private void MainLoop()
+        /// <summary>
+        /// The main loop of the logger that runs in a separate thread. It continuously checks for 
+		/// new log lines in the concurrent queue and writes them to the file.
+        /// </summary>
+        private void MainLoop()
 		{
 			while (!this._exit)
 			{
-				if (!this._lines.IsEmpty)
+				if (this._lines.IsEmpty)
 				{
-					while (this._lines.TryDequeue(out LogLine logLine))
+					this._exit = true;
+					break;
+				}
+
+				while (this._lines.TryDequeue(out LogLine logLine))
+				{
+					if (!this._exit || this._QuitWithFlush)
 					{
-						if (!this._exit || this._QuitWithFlush)
+						StringBuilder stringBuilder = new StringBuilder();
+
+						if ((this._timeProvider.GetLocalNow().Day - this._curDate.Day) != 0)
 						{
-							StringBuilder stringBuilder = new StringBuilder();
+							this._curDate = this._timeProvider.GetLocalNow();
 
-							if ((this._timeProvider.GetLocalNow().Day - this._curDate.Day) != 0)
-							{
-								this._curDate = this._timeProvider.GetLocalNow();
+							this._writer?.Dispose();
+							SetUpWriter();
 
-								this._writer?.Dispose();
-								this._writer = File.AppendText(this._logFolderPath + "/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
-
-								this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
-
-								this._writer.Write(stringBuilder.ToString());
-
-								this._writer.AutoFlush = true;
-							}
-
-							stringBuilder.Append(logLine.Timestamp.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-							stringBuilder.Append("\t");
-							stringBuilder.Append(logLine.LineText());
-							stringBuilder.Append("\t");
-
-                            stringBuilder.Append(Environment.NewLine);
-
-                            this._writer.Write(stringBuilder.ToString());
+							this._writer.Write(stringBuilder.ToString());
 						}
-					}
 
-                    Thread.Sleep(50);
+						stringBuilder.Append(logLine.Timestamp.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+						stringBuilder.Append("\t");
+						stringBuilder.Append(logLine.LineText());
+						stringBuilder.Append("\t");
 
-                    if (this._QuitWithFlush == true && this._lines.IsEmpty) { 
-						this._exit = true;
+                        stringBuilder.Append(Environment.NewLine);
+
+                        this._writer.Write(stringBuilder.ToString());
 					}
+				}
+
+                Thread.Sleep(50); // Sleep for a short time so that new log lines can be enqueued if there are more
+
+                if (this._QuitWithFlush == true && this._lines.IsEmpty) { 
+					this._exit = true;
 				}
 			}
 
             this._writer?.Dispose(); // Ensure the StreamWriter is properly disposed when the logger is stopped.
+        }
+
+		private void SetUpWriter()
+		{
+            this._writer = File.AppendText(this._logFolderPath + "/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
+
+            this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
+
+            this._writer.AutoFlush = true;
         }
 
 		public void StopWithoutFlush()
