@@ -57,11 +57,12 @@
 						{
 							StringBuilder stringBuilder = new StringBuilder();
 
-                            if ((this._timeProvider.GetLocalNow().Day - this._curDate.Day) != 0)
+							if ((this._timeProvider.GetLocalNow().Day - this._curDate.Day) != 0)
 							{
 								this._curDate = this._timeProvider.GetLocalNow();
 
-                                this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
+								this._writer?.Dispose();
+								this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
 
 								this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
 

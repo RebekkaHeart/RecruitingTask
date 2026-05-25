@@ -18,6 +18,7 @@
 | Removed underscores from `Stop_With_Flush()` and `Stop_Without_Flush()` | No other methods use underscores in this way, so I made it consistent. |
 | Made `StopWithFlush()` wait for the main thread to finish and made a test for it | |
 | Made test for `StopWithoutFlush()` | |
+| Fixed if-statement in `MainLoop()` so that the code does make a new file when crossing midnight and made test for it | |
 
 ## Changes I wish to make
 
@@ -25,7 +26,6 @@
 - Consider changing name of `ILogger`, something in C# is already called that.
 - Consider having some of or all the tests get called with different data rows.
 - Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.
-- Make test to prove a new file is created if midnight is crossed.
 - Consider making locks for `_exit` and `_QuitWithFlush` in `AsyncLogger` since they can get accessed by more than one thread at the same time.
 - Consider renaming `MainLoop()` in `AsyncLogger` to something that explains what it does.
 - Consider using `DateTimeOffset.GetUtcNow()` instead of `DateTimeOffset.GetLocalNow()`.
