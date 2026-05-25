@@ -4,47 +4,47 @@ namespace Application.LogComponent
     using System.Text;
 
     /// <summary>
-    /// This is the object that the diff. loggers (filelogger, consolelogger etc.) will operate on. The LineText() method will be called to get the text (formatted) to log
+    /// An object representing a line of a log. It contains the text to be logged and the timestamp of when the log line was created.
     /// </summary>
     public class LogLine
     {
     	/// <summary>
-    	/// The text to be displayed in a log line
+    	/// The text to be displayed in a log line.
     	/// </summary>
     	public string Text { get; set; }
 
     	/// <summary>
-    	/// The Timestamp of a log. It is initialized when the log is added.
+    	/// The time of creation of the log line.
     	/// </summary>
-    	public virtual DateTimeOffset Timestamp { get; set; }
+    	public required DateTimeOffset Timestamp { get; set; }
 
-    	public LogLine()
+    	public LogLine(string text, DateTimeOffset timestamp)
     	{
-    		this.Text = "";
+    		this.Text = text;
+    		this.Timestamp = timestamp;
     	}
+
+        public LogLine() { }
 
     	/// <summary>
     	/// Get the logged text.
     	/// </summary>
     	/// <returns>A formatted log line</returns>
-    	public virtual string LineText()
+    	public string GetLineText()
     	{
     		StringBuilder sb = new StringBuilder();
 
     		if (this.Text.Length > 0)
     		{
     			sb.Append(this.Text);
-    			sb.Append(". ");
+    			sb.Append(".");
     		}
-
-    		sb.Append(this.CreateLineText());
+            else
+            {
+                sb.Append("No text.");
+            }
 
     		return sb.ToString();
-    	}
-
-    	public virtual string CreateLineText()
-    	{
-    		return "";
     	}
     }
 }
