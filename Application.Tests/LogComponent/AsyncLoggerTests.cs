@@ -25,8 +25,7 @@ public sealed class AsyncLoggerTests
         Thread.Sleep(30);
 
         // Assert
-        string logFilePath = _logFolderPath;
-        var file = Directory.EnumerateFiles(logFilePath, $"Log{timeProvider.GetLocalNow():yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
+        var file = Directory.EnumerateFiles(_logFolderPath, $"Log{timeProvider.GetLocalNow():yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
         Assert.IsNotNull(file);
         var lines = File.ReadLines(file).ToList();
         Assert.IsTrue(lines.Any(line => line.Contains(message1)));
@@ -65,8 +64,7 @@ public sealed class AsyncLoggerTests
         await logger.StopWithFlush();
 
         // Assert
-        string logFilePath = _logFolderPath;
-        var file = Directory.EnumerateFiles(logFilePath, $"Log{now:yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
+        var file = Directory.EnumerateFiles(_logFolderPath, $"Log{now:yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
         Assert.IsNotNull(file);
         var line = File.ReadLines(file).LastOrDefault();
         Assert.AreEqual(message + ".", line?.Split(' ', '\t').Skip(2).FirstOrDefault());
@@ -93,9 +91,8 @@ public sealed class AsyncLoggerTests
         await logger.StopWithFlush();
 
         // Assert
-        string logFilePath = _logFolderPath;
-        var fileBeforeMidnight = Directory.EnumerateFiles(logFilePath, $"Log{beforeMidnight:yyyyMMdd HHmmss}*.log").LastOrDefault();
-        var fileAfterMidnight = Directory.EnumerateFiles(logFilePath, $"Log{afterMidnight:yyyyMMdd HHmmss}*.log").FirstOrDefault();
+        var fileBeforeMidnight = Directory.EnumerateFiles(_logFolderPath, $"Log{beforeMidnight:yyyyMMdd HHmmss}*.log").LastOrDefault();
+        var fileAfterMidnight = Directory.EnumerateFiles(_logFolderPath, $"Log{afterMidnight:yyyyMMdd HHmmss}*.log").FirstOrDefault();
         Assert.IsNotNull(fileBeforeMidnight);
         Assert.IsNotNull(fileAfterMidnight);
         var lineBeforeMidnight = File.ReadLines(fileBeforeMidnight).LastOrDefault();
