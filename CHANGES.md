@@ -46,7 +46,7 @@ In the terminal:
 | Renamed `LogInterface` and `AsyncLogInterface` to `ILogger` and `AsyncLogger` | Putting "I" as the first letter of the name of an interface is standard practice. An implementation of an interface should not have the word "interface" in its name, that can cause confusion. Naming it "Logger" and not "Log" makes it sound more like it's doing something rather than just being a class that can hold information. |
 | Changed and added to many summaries of properties and methods | Documentation. |
 | Deleted `LogComponent.csproj` and moved the LogComponent-folder into the Application-folder (thus also changing the namespace to `Application.LogComponent`) | Couldn't see a reason for LogComponent to have its own project or folder when it is only used by Application's `Program.cs`. |
-| Updated `Application.csproj`'s .NET-version to the newest (10) | The version it had was very old and no longer supported (thus unsafe). |
+| Updated `Application.csproj`'s .NET-version to one of the newest (10) | The version it had was very old and no longer supported (thus unsafe). |
 | Removed `if (f > 5)` in `MainLoop()` in `AsyncLogger` | It stopped any Log from making more than five logs. |
 | Changed `_lines` in `AsyncLogger` from a `List<LogLine>` into `ConcurrectQueue<LogLine>`. This also caused several other changes to take this type-change into account | Since the list was being accessed by two threads (the one adding to it in `Program.cs` and the `MainLoop()`) it needed to be able to handle several things trying to access it at once (thread-safe). |
 | Created test for `WriteToLog()` | |
@@ -57,10 +57,10 @@ In the terminal:
 | Fixed if-statement in `MainLoop()` so that the code does make a new file when crossing midnight and made test for it. | |
 | Made helper-method `SetUpWriter()` in `AsyncLogger` that sets up the StreamWriter | Replaced three lines of very specific code that were written twice. |
 | Deleted `CreateLineText()`-method from `LogLine` | It was a helper method that was one line, was only used once and just gave an empty string. Didn't serve any purpose. |
-| Renamed `LineText()` in `LogLine` to `GetLineText()` | It is good practice to name get-methods with Get. |
+| Renamed `LineText()` in `LogLine` to `GetLineText()` | It is good practice to put "Get" at the beginning of get-method's name. |
 | Removed `virtual` keyword from places in `LogLine` | `LogLine` has no derived classes (and probably never will since it's such a small project), so no need for the option to override. |
-| Changed the constructor for `LogLine` and made two options for it | The original set `Text` to an empty string, making it seem like it would always set it to an empty string no matter the input. |
-| Made `Timestamp` in `LogLine` required | It is necessary for the logging that the time is right. |
+| Changed the constructor for `LogLine` and made two options for it | The original set `Text` to an empty string, making it seem like it would always be set it to an empty string no matter the input. |
+| Made `Timestamp` in `LogLine` required | It is necessary for the logging that the time is not empty. |
 | Renamed one of the columns that get logged from "Data" to "Text" | The `LogLine` calls it text, so better to stay consistent. |
 
 
@@ -76,4 +76,5 @@ In the terminal:
 - Consider implementing validation of input.
 - Consider if something could be done to avoid having the two while-loops and many if's in `MainLoop()`.
 - Consider if `MainLoop()` should start out waiting for something to be added to `_lines` and time out if nothing gets added after a certain amount of time.
-- Consider if `GetLineText()` should add the '.' to every text line. What if the text already ends with a dot?
+- Consider if `GetLineText()` should add a dot at the end of every text line. What if the text already ends with a dot?
+- Figure out if there's a way to decide which folder it picks in `AsyncLogger` depending on whether you're running the program in Visual Studio or the command line.
