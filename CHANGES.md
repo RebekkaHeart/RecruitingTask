@@ -2,13 +2,49 @@
 
 ## Changes that I've made
 
+I've made the code live up to the demands and have the desired tests. In many cases there were certain things blocking or just not behaving the way they should. For example, there was an if-statement within the `MainLoop()` that blocked the loggers from making more than 5 logs.
+
+I have changed the names and occasionally datatypes of different things so that they better lived up to best practices. For example renaming `LogInterface` to `ILogger` because interfaces usually have an "I" at the beginning of their name. 
+
+A major change I made was deleting the `LogComponent.csproj` and moving the LogComponent-folder into the Application-folder. The extra project seemed unnecessary when the folder holding `Application.csproj` was practically empty and yet was the only thing to use the stuff inside LogComponent.
+
+
+## Running the project
+
+It needs .NET 10 to be installed.
+
+In Visual Studio:
+- Project: 
+  - Open the solution with Visual Studio.
+  - Click the green play button and it should run. 
+  - The printed logs can be seen in `Application\LogTest`
+- Test project: 
+  - Open the solution with Visual Studio.
+  - Use the top toolbar, go to "Test" and click on it. 
+  - There should be a dropdown, where the first option is "Run All Tests". Click it.
+  - The tests should run and pass. The results can be seen in the `Application.Tests\LogTest`
+
+In the terminal:
+- Project:
+  - First, in the code, comment out the `_logFolderPath` in `AsyncLogger` that is in use and uncomment the one below that states it is for the terminal.
+  - Then, in the terminal, navigate into `Application`.
+  - Write `dotnet run` into the terminal and it should run.
+  - The printed logs can be seen in `Application\LogTest`
+- Test project: 
+  - Navigate into the Application.Tests-folder.
+  - Write `dotnet test` into the terminal. 
+  - The tests should run and pass. The results can be seen in the `Application.Tests\LogTest`
+
+
+## Changes in detail
+
 | Change/Addition                                  | Reasoning        |
 |--------------------------------------------------|------------------|
 | Moved all class properties in classes to the top | For readability. |
 | Removed regions from `LogLine.cs` | They were only present in this file and felt unnecessary in such a small project. |
 | Renamed `LogTest` namespace to `LogComponent` | Fit better for folder structure and was confusing considering the project puts logs in a folder named "LogTest". |
 | Renamed `LogInterface` and `AsyncLogInterface` to `ILogger` and `AsyncLogger` | Putting "I" as the first letter of the name of an interface is standard practice. An implementation of an interface should not have the word "interface" in its name, that can cause confusion. Naming it "Logger" and not "Log" makes it sound more like it's doing something rather than just being a class that can hold information. |
-| Changed and added to many summaries of properties and methods. | |
+| Changed and added to many summaries of properties and methods | Documentation. |
 | Deleted `LogComponent.csproj` and moved the LogComponent-folder into the Application-folder (thus also changing the namespace to `Application.LogComponent`) | Couldn't see a reason for LogComponent to have its own project or folder when it is only used by Application's `Program.cs`. |
 | Updated `Application.csproj`'s .NET-version to the newest (10) | The version it had was very old and no longer supported (thus unsafe). |
 | Removed `if (f > 5)` in `MainLoop()` in `AsyncLogger` | It stopped any Log from making more than five logs. |
@@ -26,6 +62,7 @@
 | Changed the constructor for `LogLine` and made two options for it | The original set `Text` to an empty string, making it seem like it would always set it to an empty string no matter the input. |
 | Made `Timestamp` in `LogLine` required | It is necessary for the logging that the time is right. |
 | Renamed one of the columns that get logged from "Data" to "Text" | The `LogLine` calls it text, so better to stay consistent. |
+
 
 ## Changes to consider making
 

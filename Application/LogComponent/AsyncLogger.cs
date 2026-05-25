@@ -23,7 +23,9 @@
 
 		private DateTimeOffset _curDate;
 
-		private readonly string _logFolderPath = @"./../../../LogTest";
+		private readonly string _logFolderPath = @"./../../../LogTest"; // if run in Visual Studio
+
+        //private readonly string _logFolderPath = @"./LogTest"; // if run in command line
 
         /// <summary>
         /// An asynchronous logger that writes log lines to a file. The logger runs in a separate thread and uses a concurrent queue to store

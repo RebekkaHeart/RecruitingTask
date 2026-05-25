@@ -25,10 +25,10 @@ namespace Application
 			for (int i = 50; i > 0; i--)
 			{
 				logger2.WriteLog("Number with no flush: " + i.ToString());
-                Thread.Sleep(20);
             }
 
-			logger2.StopWithoutFlush();
+            Thread.Sleep(20); // if this is not here, StopWithoutFlush will go into action so fast that it stops any logs from being written
+            logger2.StopWithoutFlush();
 
 			await logger1Thread;
 
