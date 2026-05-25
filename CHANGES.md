@@ -22,7 +22,6 @@
 
 ## Changes I wish to make
 
-- Fix location of LogTest-folder. Right now it's deep in the bin, both normally and for tests.
 - Consider changing name of `ILogger`, something in C# is already called that.
 - Consider having some of or all the tests get called with different data rows.
 - Make helper-method in `AsyncLogger` for when it creates a new Log-file, because three lines of code are written twice.

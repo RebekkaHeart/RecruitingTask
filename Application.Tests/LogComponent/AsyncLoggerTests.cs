@@ -6,6 +6,8 @@ namespace Application.Tests.LogComponent;
 [TestClass]
 public sealed class AsyncLoggerTests
 {
+    private string _logFolderPath = @"./../../../LogTest";
+
     [TestMethod]
     public async Task StopWithoutFlush_ShouldNotWriteRemainingLogs()
     {
@@ -23,7 +25,7 @@ public sealed class AsyncLoggerTests
         Thread.Sleep(30);
 
         // Assert
-        string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");
+        string logFilePath = _logFolderPath;
         var file = Directory.EnumerateFiles(logFilePath, $"Log{timeProvider.GetLocalNow():yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
         Assert.IsNotNull(file);
         var lines = File.ReadLines(file).ToList();
@@ -63,7 +65,7 @@ public sealed class AsyncLoggerTests
         await logger.StopWithFlush();
 
         // Assert
-        string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");
+        string logFilePath = _logFolderPath;
         var file = Directory.EnumerateFiles(logFilePath, $"Log{now:yyyyMMdd HHmmss}*.log").LastOrDefault(); // Get the most recent log file
         Assert.IsNotNull(file);
         var line = File.ReadLines(file).LastOrDefault();
@@ -91,7 +93,7 @@ public sealed class AsyncLoggerTests
         await logger.StopWithFlush();
 
         // Assert
-        string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "LogTest");
+        string logFilePath = _logFolderPath;
         var fileBeforeMidnight = Directory.EnumerateFiles(logFilePath, $"Log{beforeMidnight:yyyyMMdd HHmmss}*.log").LastOrDefault();
         var fileAfterMidnight = Directory.EnumerateFiles(logFilePath, $"Log{afterMidnight:yyyyMMdd HHmmss}*.log").FirstOrDefault();
         Assert.IsNotNull(fileBeforeMidnight);

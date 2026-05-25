@@ -7,7 +7,7 @@
 	using System.Threading;
     using System.Threading.Tasks;
 
-    public class AsyncLogger : ILogger
+	public class AsyncLogger : ILogger
 	{
 		private Thread _runThread;
 
@@ -23,19 +23,21 @@
 
 		private DateTimeOffset _curDate;
 
+		private string _logFolderPath = @"./../../../LogTest";
+
         /// <summary>
         /// An asynchronous logger that writes log lines to a file. The logger runs in a separate thread and uses a concurrent queue 
         /// to store log lines until they are written to the file. The logger can be stopped with or without flushing the remaining log lines to the file.
         /// </summary>
         public AsyncLogger(TimeProvider timeProvider)
 		{
-            if (!Directory.Exists(@"./LogTest"))
-				Directory.CreateDirectory(@"./LogTest");
+            if (!Directory.Exists(this._logFolderPath))
+				Directory.CreateDirectory(this._logFolderPath);
 
 			this._timeProvider = timeProvider;
 			this._curDate = this._timeProvider.GetLocalNow();
 
-			this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
+			this._writer = File.AppendText(this._logFolderPath + "/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
 
 			this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
 
@@ -62,7 +64,7 @@
 								this._curDate = this._timeProvider.GetLocalNow();
 
 								this._writer?.Dispose();
-								this._writer = File.AppendText(@"./LogTest/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
+								this._writer = File.AppendText(this._logFolderPath + "/Log" + this._timeProvider.GetLocalNow().ToString("yyyyMMdd HHmmss fff") + ".log");
 
 								this._writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
 
@@ -109,5 +111,5 @@
 		{
 			this._lines.Enqueue(new LogLine() {Text = s, Timestamp = this._timeProvider.GetLocalNow()});
 		}
-	}
+    }
 }
